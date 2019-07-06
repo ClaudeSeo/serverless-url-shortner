@@ -1,0 +1,30 @@
+service: serverless-url-shortner
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  stage: ${opt:stage, 'development'}
+  region: ${opt:region, 'ap-northeast-2'}
+  logRetentionInDays: 30
+  timeout: 30
+  memorySize: 128
+  environment:
+    TZ: Asia/Seoul
+    NODE_ENV: ${opt:stage, 'development'}
+    S3_REGION: ${opt:region, 'ap-northeast-2'}
+    S3_BUCKET: ${file(./config.${self:provider.stage}.json):S3_BUCKET}
+    S3_PREFIX: ${file(./config.${self:provider.stage}.json):S3_PREFIX}
+    SHORT_HOST: ${file(./config.${self:provider.stage}.json):SHORT_HOST}
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+functions:
+  hello:
+    handler: src/handler.exec
+    events:
+      - http:
+          path: /
+          method: post
+          cors: true

@@ -56,6 +56,14 @@ typings/
 
 # dotenv environment variables file
 .env
+config.development.json
+config.test.json
+config.production.json
 
-# next.js build output
+# build output
 .next
+dist
+
+# ide
+.idea
+
