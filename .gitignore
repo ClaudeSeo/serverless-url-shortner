@@ -64,6 +64,9 @@ config.production.json
 .next
 dist
 
-# ide
+# idea
 .idea
+
+# serverless
+.serverless
 
