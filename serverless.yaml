@@ -21,7 +21,7 @@ plugins:
   - serverless-offline
 
 functions:
-  hello:
+  exec:
     handler: src/handler.exec
     events:
       - http:
