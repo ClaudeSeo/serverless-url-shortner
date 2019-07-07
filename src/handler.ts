@@ -1,18 +1,20 @@
 import * as url from 'url';
 import * as _ from 'lodash';
-import { S3 } from 'aws-sdk';
+import * as AWS from 'aws-sdk';
 import { HTTPResponse, ShortUrlResponse } from './interface';
 
 const config = Object.freeze({
+    awsRegion: process.env.REGION || '',
     s3: {
         bucket: process.env.S3_BUCKET || '',
-        region: process.env.S3_REGION || '',
         prefix: process.env.S3_PREFIX || '',
     },
     shortHost: process.env.SHORT_HOST,
 });
 
-const s3 = new S3();
+AWS.config.update({ region: config.awsRegion });
+
+const s3 = new AWS.S3();
 
 const generateRandomCharacter = (): string => {
     return Math.random().toString(36).substring(2, 5) + Math.random().toString(36).substring(2, 5);
@@ -31,7 +33,7 @@ const validateBody = async (longUrl: string | null): Promise<string> => {
 };
 
 const saveShortUrl = async (longUrl: string, key: string): Promise<ShortUrlResponse> => {
-    const params: S3.Types.PutObjectRequest = {
+    const params = {
         ACL: 'public-read',
         Bucket: config.s3.bucket,
         Key: key,
@@ -41,7 +43,7 @@ const saveShortUrl = async (longUrl: string, key: string): Promise<ShortUrlRespo
     return s3.putObject(params)
         .promise()
         .then(() => {
-            const urlPrefix = config.shortHost ? config.shortHost : `${config.s3.bucket}.s3.${config.s3.region}.amazonaws.com`;
+            const urlPrefix = config.shortHost ? config.shortHost : `${config.s3.bucket}.s3.${config.awsRegion}.amazonaws.com`;
             const shortUrl = `https://${urlPrefix}/${key}`;
 
             return {
@@ -68,7 +70,7 @@ const makeShortUrl = async (longUrl: string, retry: number = 0): Promise<ShortUr
 
     const shortId = generateRandomCharacter();
     const key = `${config.s3.prefix}/${shortId}`;
-    const params: S3.HeadObjectRequest = { Bucket: config.s3.bucket, Key: key };
+    const params = { Bucket: config.s3.bucket, Key: key };
 
     return s3.headObject(params)
         .promise()

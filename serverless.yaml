@@ -11,7 +11,7 @@ provider:
   environment:
     TZ: Asia/Seoul
     NODE_ENV: ${opt:stage, 'development'}
-    S3_REGION: ${opt:region, 'ap-northeast-2'}
+    REGION: ${opt:region, 'ap-northeast-2'}
     S3_BUCKET: ${file(./config.${self:provider.stage}.json):S3_BUCKET}
     S3_PREFIX: ${file(./config.${self:provider.stage}.json):S3_PREFIX}
     SHORT_HOST: ${file(./config.${self:provider.stage}.json):SHORT_HOST}
